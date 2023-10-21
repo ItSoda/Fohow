@@ -69,7 +69,7 @@ class OrderCreateView(APIView):
                 },
                 'confirmation': {
                     'type': 'redirect',
-                    'return_url': reverse('index'),
+                    'return_url': settings.YOOKASSA_REDIRECT_URL
                 },
                 "capture": True,
                 "save_payment_method": True,

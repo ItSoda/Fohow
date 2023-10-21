@@ -55,4 +55,8 @@ class EmailVerification(models.Model):
         )
 
     def is_expired(self):
-        return True if now() >= self.expiration else False
+        if now() >= self.expiration:
+            self.delete()
+            self.save()
+            return True
+        return False
