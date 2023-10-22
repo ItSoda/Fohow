@@ -1,9 +1,8 @@
-from django.urls import path, include
 from django.conf import settings
-
+from django.urls import include, path
 from rest_framework import routers
-from .views import OrderModelViewSet, OrderCreateView, YookassaWebhookView
 
+from .views import OrderCreateView, OrderModelViewSet, YookassaWebhookView
 
 app_name = 'orders'
 

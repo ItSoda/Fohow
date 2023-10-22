@@ -1,9 +1,8 @@
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
 import uuid
 from datetime import timedelta
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.timezone import now
 
 from users.models import EmailVerification, User

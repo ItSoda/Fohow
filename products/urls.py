@@ -1,9 +1,9 @@
-from django.urls import path, include
 from django.conf import settings
-
+from django.urls import include, path
 from rest_framework import routers
-from .views import ProductModelViewSet, CategoryModelViewSet, ProductSearchView, BasketModelViewSet
 
+from .views import (BasketModelViewSet, CategoryModelViewSet,
+                    ProductModelViewSet, ProductSearchView, FiltersProductListView)
 
 app_name = 'products'
 
@@ -16,4 +16,5 @@ router.register(r'baskets', BasketModelViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('search/', ProductSearchView.as_view(), name='search-list'),
+    path('product_filters/', FiltersProductListView.as_view(), name='product_filters'),
 ]

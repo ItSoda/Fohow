@@ -1,13 +1,15 @@
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-from .models import Product, Category, Basket
-from .serializers import ProductSerializer, CategorySerializer, BasketSerializer
-from Fohow.permissions import IsAdminOrReadOnly
-from rest_framework.permissions import IsAuthenticated
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import filters, status
 from rest_framework.generics import ListAPIView
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+from Fohow.permissions import IsAdminOrReadOnly
+from django.db.models import Q
+from .models import Basket, Category, Product
+from .serializers import (BasketSerializer, CategorySerializer,
+                          ProductSerializer)
 
 
 class ProductModelViewSet(ModelViewSet):
@@ -18,6 +20,30 @@ class ProductModelViewSet(ModelViewSet):
     @method_decorator(cache_page(10))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+
+class FiltersProductListView(ListAPIView):
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        # Береме параметры из url
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
+        category_names = self.request.GET.getlist('categories')
+        if min_price == None and max_price == None:
+            return Product.objects.filter(categories__name__in=category_names)
+        return Product.objects.filter(
+            Q(categories__name__in=category_names) |
+            Q(price__gte=min_price) &
+            Q(price__lte=max_price)
+            )
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serialized_data = ProductSerializer(queryset, many=True).data
+        return Response({'products': serialized_data}, status=status.HTTP_200_OK)
+    
+
 
 class CategoryModelViewSet(ModelViewSet):
     queryset = Category.objects.all()

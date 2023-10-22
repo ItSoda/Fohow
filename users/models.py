@@ -1,10 +1,11 @@
 from django.conf import settings
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.urls import reverse
-from .managers import CustomUserManager
 from django.core.mail import send_mail
+from django.db import models
+from django.urls import reverse
 from django.utils.timezone import now
+
+from .managers import CustomUserManager
 
 
 # User Model

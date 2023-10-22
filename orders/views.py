@@ -1,27 +1,24 @@
 import json
 import logging
+
+from django.conf import settings
+from django.db.models import Q
 from django.http import HttpResponse
 from django.urls import reverse
-from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
-
-from django.db.models import Q
-
+from rest_framework.viewsets import ModelViewSet
 from yookassa import Configuration, Payment
 from yookassa.domain.notification import WebhookNotificationFactory
 
-from django.conf import settings 
-
+from Fohow.permissions import IsAdminOrReadOnly
 from orders.models import Order
 from orders.serializers import OrderSerializer
 from products.models import Basket
-
-from Fohow.permissions import IsAdminOrReadOnly
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +40,7 @@ class OrderModelViewSet(ModelViewSet):
 
 
 class OrderCreateView(APIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
     def post(self, request):
         serializer = OrderSerializer(data=request.data)
         if serializer.is_valid():

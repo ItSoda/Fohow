@@ -1,4 +1,5 @@
 from django.db import models
+
 from products.models import Basket
 from users.models import User
 
@@ -14,6 +15,7 @@ class Order(models.Model):
         (ON_WAY, 'В пути'),
         (DELIVERED, 'Доставлен'),
     )
+
 
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)

@@ -21,3 +21,4 @@ yookassa==2.4.0
 
 pyTelegramBotAPI==4.13.0
 
+drf_extensions==0.7.1
