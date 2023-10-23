@@ -28,7 +28,7 @@ class FiltersProductListView(ListAPIView):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
-        # Береме параметры из url
+        # Берем параметры из url
         min_price = self.request.GET.get('min_price')
         max_price = self.request.GET.get('max_price')
         category_names = self.request.GET.getlist('categories')
