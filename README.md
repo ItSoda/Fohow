@@ -1,7 +1,2 @@
 # API for FohowOmsk
-### Сайт еще в разработке команды POGOS
-
-API
-
-
-Fohow top
+### Сайт еще в разработке команды Pogos
