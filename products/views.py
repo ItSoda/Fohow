@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework import filters, status
@@ -5,8 +6,9 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
 from Fohow.permissions import IsAdminOrReadOnly
-from django.db.models import Q
+
 from .models import Basket, Category, Product
 from .serializers import (BasketSerializer, CategorySerializer,
                           ProductSerializer)

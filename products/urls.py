@@ -3,7 +3,8 @@ from django.urls import include, path
 from rest_framework import routers
 
 from .views import (BasketModelViewSet, CategoryModelViewSet,
-                    ProductModelViewSet, ProductSearchView, FiltersProductListView)
+                    FiltersProductListView, ProductModelViewSet,
+                    ProductSearchView)
 
 app_name = 'products'
 
