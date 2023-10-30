@@ -5,67 +5,103 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30)),
             ],
             options={
-                'verbose_name': 'категорию',
-                'verbose_name_plural': 'Категории',
-                'ordering': ['id'],
+                "verbose_name": "категорию",
+                "verbose_name_plural": "Категории",
+                "ordering": ["id"],
             },
         ),
         migrations.CreateModel(
-            name='Image',
+            name="Image",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('img', models.ImageField(upload_to='products_images')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("img", models.ImageField(upload_to="products_images")),
             ],
             options={
-                'verbose_name': 'фотографию',
-                'verbose_name_plural': 'Фотографии',
+                "verbose_name": "фотографию",
+                "verbose_name_plural": "Фотографии",
             },
         ),
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(db_index=True, max_length=120)),
-                ('description', models.TextField()),
-                ('price', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('product_composition', models.TextField()),
-                ('packaging_standard', models.TextField()),
-                ('expiration_date', models.CharField(max_length=150)),
-                ('method_of_application', models.TextField()),
-                ('quantity', models.PositiveBigIntegerField(default=0)),
-                ('categories', models.ManyToManyField(to='products.category')),
-                ('images', models.ManyToManyField(to='products.image')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(db_index=True, max_length=120)),
+                ("description", models.TextField()),
+                ("price", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("product_composition", models.TextField()),
+                ("packaging_standard", models.TextField()),
+                ("expiration_date", models.CharField(max_length=150)),
+                ("method_of_application", models.TextField()),
+                ("quantity", models.PositiveBigIntegerField(default=0)),
+                ("categories", models.ManyToManyField(to="products.category")),
+                ("images", models.ManyToManyField(to="products.image")),
             ],
             options={
-                'verbose_name': 'продукт',
-                'verbose_name_plural': 'Продукты',
+                "verbose_name": "продукт",
+                "verbose_name_plural": "Продукты",
             },
         ),
         migrations.CreateModel(
-            name='Basket',
+            name="Basket",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantity', models.IntegerField(default=0)),
-                ('created_timestamp', models.DateTimeField(auto_now_add=True)),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.product')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("quantity", models.IntegerField(default=0)),
+                ("created_timestamp", models.DateTimeField(auto_now_add=True)),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="products.product",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'корзину',
-                'verbose_name_plural': 'Корзины',
+                "verbose_name": "корзину",
+                "verbose_name_plural": "Корзины",
             },
         ),
     ]

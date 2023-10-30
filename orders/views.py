@@ -26,21 +26,21 @@ logger = logging.getLogger(__name__)
 class OrderModelViewSet(ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = (IsAdminOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
 
     def get_queryset(self):
-        queryset =  super(OrderModelViewSet, self).get_queryset()
+        queryset = super(OrderModelViewSet, self).get_queryset()
         return queryset.filter(initiator=self.request.user)
-    
-    
+
     @method_decorator(cache_page(60))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
 
 class OrderCreateView(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
+
     def post(self, request):
         serializer = OrderSerializer(data=request.data)
         if serializer.is_valid():
@@ -59,26 +59,33 @@ class OrderCreateView(APIView):
             Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
 
             # Создайте объект платежа
-            payment = Payment.create({
-                'amount': {
-                    'value': str(order_price),
-                    'currency': 'RUB',
-                },
-                'confirmation': {
-                    'type': 'redirect',
-                    'return_url': settings.YOOKASSA_REDIRECT_URL
-                },
-                "capture": True,
-                "save_payment_method": True,
-                'description': f'Order #{order_id}',
-                'metadata': {
-                    'order_id': order_id,
-                    'order_products': ', '.join(order_products),
-                },
-            })
+            payment = Payment.create(
+                {
+                    "amount": {
+                        "value": str(order_price),
+                        "currency": "RUB",
+                    },
+                    "confirmation": {
+                        "type": "redirect",
+                        "return_url": settings.YOOKASSA_REDIRECT_URL,
+                    },
+                    "capture": True,
+                    "save_payment_method": True,
+                    "description": f"Order #{order_id}",
+                    "metadata": {
+                        "order_id": order_id,
+                        "order_products": ", ".join(order_products),
+                    },
+                }
+            )
 
             # Перенаправьте пользователя на страницу оплаты Юкассы
-            return Response({'payment_url': payment.confirmation.confirmation_url, 'order_price': order_price})
+            return Response(
+                {
+                    "payment_url": payment.confirmation.confirmation_url,
+                    "order_price": order_price,
+                }
+            )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -88,22 +95,22 @@ class YookassaWebhookView(APIView):
         event_json = json.loads(request.body.decode("utf-8"))
 
         try:
-            logger.info(f'Responce: {event_json}')
+            logger.info(f"Responce: {event_json}")
             notification = WebhookNotificationFactory().create(event_json)
-            logger.info('Webhook is create')
+            logger.info("Webhook is create")
             # Получаем айди заказа из метаданных уведомления
-            order_id = notification.object.metadata.get('order_id')
+            order_id = notification.object.metadata.get("order_id")
             order = Order.objects.get(id=order_id)
             # Проверяем статус платежа
-            if notification.object.status == 'succeeded':
-                logger.info('good')
+            if notification.object.status == "succeeded":
+                logger.info("good")
                 order.update_after_success_payments()
                 # Обновляем статус заказа
-            elif notification.object.status == 'canceled':
-                logger.info('bad')
+            elif notification.object.status == "canceled":
+                logger.info("bad")
                 order.update_after_canceled_payments()
                 # Обновляем статус заказа
         except Exception as e:
-            logger.info('Ошибка создания вебхука %s', str(e))
-                    # Обработка ошибок при разборе уведомления
+            logger.info("Ошибка создания вебхука %s", str(e))
+            # Обработка ошибок при разборе уведомления
         return HttpResponse(status=200)

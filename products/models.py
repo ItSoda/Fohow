@@ -7,23 +7,23 @@ class Category(models.Model):
     name = models.CharField(max_length=30)
 
     class Meta:
-        verbose_name = 'категорию'
-        verbose_name_plural = 'Категории'
-        ordering = ['id']
+        verbose_name = "категорию"
+        verbose_name_plural = "Категории"
+        ordering = ["id"]
 
     def __str__(self):
         return self.name
 
 
 class Image(models.Model):
-    img = models.ImageField(upload_to='products_images')
+    img = models.ImageField(upload_to="products_images")
 
     class Meta:
-        verbose_name = 'фотографию'
-        verbose_name_plural = 'Фотографии'
+        verbose_name = "фотографию"
+        verbose_name_plural = "Фотографии"
 
     def __str__(self):
-        return f'Фото {self.img}'
+        return f"Фото {self.img}"
 
 
 class Product(models.Model):
@@ -39,11 +39,11 @@ class Product(models.Model):
     images = models.ManyToManyField(Image)
 
     class Meta:
-        verbose_name = 'продукт'
-        verbose_name_plural = 'Продукты'
+        verbose_name = "продукт"
+        verbose_name_plural = "Продукты"
 
     def __str__(self):
-        return f'Продукт: {self.name} | Категория: {self.categories.all()[0]} | Цена: {self.price}'
+        return f"Продукт: {self.name} | Категория: {self.categories.all()[0]} | Цена: {self.price}"
 
 
 # modelsQuerySet and modelsManager
@@ -53,15 +53,15 @@ class BasketQuerySet(models.QuerySet):
 
     def total_quantity(self):
         return sum([basket.quantity() for basket in self])
-    
+
 
 class BasketManager(models.Manager):
     def get_queryset(self):
         return BasketQuerySet(self.model)
-    
+
     def total_sum(self):
         return self.get_queryset().total_sum()
-    
+
     def total_quantity(self):
         return self.get_queryset().total_quantity()
 
@@ -76,21 +76,21 @@ class Basket(models.Model):
     basketmanager = BasketManager()
 
     class Meta:
-        verbose_name = 'корзину'
-        verbose_name_plural = 'Корзины'
+        verbose_name = "корзину"
+        verbose_name_plural = "Корзины"
 
     def __str__(self):
-        return f'Корзина для {self.user} | Продукт {self.product}'
+        return f"Корзина для {self.user} | Продукт {self.product}"
 
     def sum(self):
         return int(self.product.price * self.quantity)
-    
+
     def de_json(self):
         basket_item = {
-            'name': self.product.name,
-            'quantity': self.quantity,
-            'price': float(self.product.price),
-            'sum': float(self.sum()),
+            "name": self.product.name,
+            "quantity": self.quantity,
+            "price": float(self.product.price),
+            "sum": float(self.sum()),
         }
         return basket_item
 

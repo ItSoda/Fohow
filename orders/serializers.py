@@ -8,9 +8,9 @@ from .models import Order
 class OrderSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source="get_status_display", read_only=True)
     initiator = serializers.SlugRelatedField(
-        queryset = User.objects.all(),
-        slug_field='id'
+        queryset=User.objects.all(), slug_field="id"
     )
+
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = "__all__"

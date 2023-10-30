@@ -16,18 +16,17 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, null=True)
     last_name = models.CharField(max_length=50, null=True)
 
-    
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
     class Meta:
-        verbose_name = 'пользователя'
-        verbose_name_plural = 'Пользователи'
+        verbose_name = "пользователя"
+        verbose_name_plural = "Пользователи"
 
     def __str__(self):
-        return f'Пользователь {self.email} | {self.first_name}'
+        return f"Пользователь {self.email} | {self.first_name}"
 
 
 class EmailVerification(models.Model):
@@ -37,15 +36,19 @@ class EmailVerification(models.Model):
     expiration = models.DateTimeField()
 
     def __str__(self):
-        return f'EmailVerification object for {self.user.email}'
-    
+        return f"EmailVerification object for {self.user.email}"
+
     def send_verification_email(self):
-        link = reverse('users:email_verify', kwargs={'email': self.user.email, 'code': self.code})
-        full_link = f'{settings.DOMAIN_NAME}{link}'
-        subjects = f'Подтверждение учетной записи для {self.user.email}'
-        message = 'Для подтверждения электронной почты {} перейдите по ссылке: {}.'.format(
-            self.user.email,
-            full_link,
+        link = reverse(
+            "users:email_verify", kwargs={"email": self.user.email, "code": self.code}
+        )
+        full_link = f"{settings.DOMAIN_NAME}{link}"
+        subjects = f"Подтверждение учетной записи для {self.user.email}"
+        message = (
+            "Для подтверждения электронной почты {} перейдите по ссылке: {}.".format(
+                self.user.email,
+                full_link,
+            )
         )
         send_mail(
             subject=subjects,
