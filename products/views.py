@@ -10,7 +10,8 @@ from rest_framework.viewsets import ModelViewSet
 from Fohow.permissions import IsAdminOrReadOnly
 
 from .models import Basket, Category, Product
-from .serializers import BasketSerializer, CategorySerializer, ProductSerializer
+from .serializers import (BasketSerializer, CategorySerializer,
+                          ProductSerializer)
 
 
 class ProductModelViewSet(ModelViewSet):

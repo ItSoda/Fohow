@@ -2,18 +2,14 @@ from django.conf import settings
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import (
-    BasketModelViewSet,
-    CategoryModelViewSet,
-    FiltersProductListView,
-    ProductModelViewSet,
-    ProductSearchView,
-)
+from .views import (BasketModelViewSet, CategoryModelViewSet,
+                    FiltersProductListView, ProductModelViewSet,
+                    ProductSearchView)
 
 app_name = "products"
 
 router = routers.DefaultRouter()
-router.register(r"products", ProductModelViewSet)
+router.register(r"products", ProductModelViewSet, basename="products")
 router.register(r"categories", CategoryModelViewSet)
 router.register(r"baskets", BasketModelViewSet)
 
