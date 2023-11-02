@@ -10,11 +10,9 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ImageSerializer(serializers.ModelSerializer):
-    img_url = serializers.ImageField(source="img", read_only=True)
-
     class Meta:
         model = Image
-        fields = ("img_url",)
+        fields = ("img",)
 
 
 class ProductSerializer(serializers.ModelSerializer):

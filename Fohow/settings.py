@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "djoser",
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "drf_yasg",
     "products",
     "users",
@@ -201,8 +202,10 @@ CACHES = {
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    ),
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
+
 
 # Djoser
 DJOSER = {
