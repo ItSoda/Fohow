@@ -7,7 +7,7 @@ from .views import EmailVerificationAndUserUpdateView, UserModelViewSet
 app_name = "users"
 
 router = routers.DefaultRouter()
-router.register(r"users", UserModelViewSet)
+router.register(r"users", UserModelViewSet, basename="users")
 
 
 urlpatterns = [

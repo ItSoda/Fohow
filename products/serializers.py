@@ -1,3 +1,7 @@
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
+
+from django.core.files import File
 from rest_framework import fields, serializers
 
 from .models import Basket, Category, Image, Product
@@ -9,7 +13,25 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ("name",)
 
 
+class ImageFieldFromURL(serializers.ImageField):
+    def to_internal_value(self, data):
+        # Проверяем, если data - это URL
+        if data.startswith("http") or data.startswith("https"):
+            # Открываем URL и читаем его содержимое
+            response = urlopen(data)
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(response.read())
+            img_temp.flush()
+            # Создаем объект File из временного файла
+            img = File(img_temp)
+            # Возвращаем его как значение поля
+            return img
+        return super().to_internal_value(data)
+
+
 class ImageSerializer(serializers.ModelSerializer):
+    img = ImageFieldFromURL()
+
     class Meta:
         model = Image
         fields = ("img",)
@@ -17,9 +39,9 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     categories = serializers.SlugRelatedField(
-        many=True, read_only=True, slug_field="name"
+        many=True, slug_field="name", read_only=True
     )
-    images = ImageSerializer(many=True)
+    images = ImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
