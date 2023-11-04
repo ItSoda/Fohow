@@ -10,7 +10,7 @@ from .models import Basket, Category, Image, Product
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ("name",)
+        fields = ("id", "name",)
 
 
 class ImageFieldFromURL(serializers.ImageField):
@@ -31,17 +31,33 @@ class ImageFieldFromURL(serializers.ImageField):
 
 class ImageSerializer(serializers.ModelSerializer):
     img = ImageFieldFromURL()
-
     class Meta:
         model = Image
-        fields = ("img",)
+        fields = ("id", "img",)
 
 
+class ProductCreateSerializer(serializers.ModelSerializer):
+    categories = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+    images = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+
+    class Meta:
+        model = Product
+        fields = "__all__"
+
+    def create(self, validated_data):
+        categories_ids = validated_data.pop("categories")
+        images_ids = validated_data.pop("images")
+
+        instance = Product.objects.create(**validated_data)
+
+        instance.categories.set(categories_ids)
+        instance.images.set(images_ids)
+
+        return instance
+    
 class ProductSerializer(serializers.ModelSerializer):
-    categories = serializers.SlugRelatedField(
-        many=True, slug_field="name", read_only=True
-    )
-    images = ImageSerializer(many=True, read_only=True)
+    categories = CategorySerializer(many=True)
+    images = ImageSerializer(many=True)
 
     class Meta:
         model = Product
@@ -70,3 +86,7 @@ class BasketSerializer(serializers.ModelSerializer):
 
     def get_total_sum(self, obj):
         return Basket.basketmanager.filter(user_id=obj.user.id).total_sum()
+
+
+
+

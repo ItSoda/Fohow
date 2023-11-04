@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework import filters, status
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -11,7 +11,7 @@ from Fohow.permissions import IsAdminOrReadOnly
 
 from .models import Basket, Category, Product
 from .serializers import (BasketSerializer, CategorySerializer,
-                          ProductSerializer)
+                          ProductSerializer, ProductCreateSerializer)
 
 
 class ProductModelViewSet(ModelViewSet):
@@ -23,7 +23,10 @@ class ProductModelViewSet(ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-
+    def create(self, request, *args, **kwargs):
+        self.get_serializer = ProductCreateSerializer
+        return super().create(request, *args, **kwargs)
+    
 class FiltersProductListView(ListAPIView):
     serializer_class = ProductSerializer
 

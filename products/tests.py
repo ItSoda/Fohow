@@ -66,14 +66,8 @@ class ProductsTestCase(APITestCase):
             "packaging_standard": "product32_packaging",
             "expiration_date": "product23_ex",
             "method_of_application": "product23_moa",
-            "categories": ["cat1"],
-            "images": [
-                {
-                    "img": [
-                        "https://img.freepik.com/free-photo/young-adult-enjoying-yoga-in-nature_23-2149573175.jpg"
-                    ]
-                }
-            ],
+            "categories": [self.cat.id],
+            "images": [self.img.id]
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

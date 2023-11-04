@@ -7,7 +7,7 @@ from .views import OrderCreateView, OrderModelViewSet, YookassaWebhookView
 app_name = "orders"
 
 router = routers.DefaultRouter()
-router.register(r"orders", OrderModelViewSet)
+router.register(r"orders", OrderModelViewSet, basename="orders")
 
 
 urlpatterns = [
