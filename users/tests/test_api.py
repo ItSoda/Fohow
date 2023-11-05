@@ -4,7 +4,8 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import EmailVerification, User
+from users.models import EmailVerification, User
+from users.serializers import UserSerializer
 
 
 class UserTests(APITestCase):
@@ -23,11 +24,13 @@ class UserTests(APITestCase):
         url = f"{settings.DOMAIN_NAME}/auth/users/"
         data = {"email": "lolchik@gmail.com", "password": "testpaswword"}
         response = self.client.post(url, data)
+        user_sr_data = UserSerializer(data).data
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             User.objects.count(), 3
         )  # 3 пользователей, так как суперпользователь и тестовый уже созданы
         self.assertEqual(EmailVerification.objects.count(), 3)
+        self.assertEqual(user_sr_data["email"], response.data["email"])
 
     def test_login_account(self):
         url = reverse("token_obtain_pair")

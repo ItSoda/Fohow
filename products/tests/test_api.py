@@ -2,10 +2,9 @@ from django.conf import settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, force_authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from products.models import Category, Image, Product
-from products.serializers import (CategorySerializer, ImageSerializer,
-                                  ProductSerializer)
+from products.models import Basket, Category, Image, Product
 from users.models import User
 
 
@@ -24,7 +23,7 @@ class ProductsTestCase(APITestCase):
         self.product = Product.objects.create(
             name="product1",
             description="product1_desc",
-            price="9999.00",
+            price="10000.00",
             product_composition="product1_pr_cm",
             packaging_standard="product1_packaging",
             expiration_date="product1_ex",
@@ -37,7 +36,7 @@ class ProductsTestCase(APITestCase):
         self.product2 = Product.objects.create(
             name="product2",
             description="product2_desc",
-            price="9999.00",
+            price="5000.00",
             product_composition="product2_pr_cm",
             packaging_standard="product2_packaging",
             expiration_date="product2_ex",
@@ -147,3 +146,114 @@ class CategoryTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Category.objects.count(), 1)
+
+
+class BasketTests(APITestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            email="nik140406@gmail.com", password="nik140406"
+        )
+        self.user = User.objects.create_user(
+            email="nik1404006@gmail.com", password="nik1404006"
+        )
+        self.access_token = str(RefreshToken.for_user(self.superuser).access_token)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
+
+        self.cat = Category.objects.create(name="cat1")
+        self.img = Image.objects.create(
+            img="https://img.freepik.com/free-photo/young-adult-enjoying-yoga-in-nature_23-2149573175.jpg"
+        )
+
+        self.product = Product.objects.create(
+            name="product",
+            description="product1_desc",
+            price=10000.00,
+            product_composition="product1_pr_cm",
+            packaging_standard="product1_packaging",
+            expiration_date="product1_ex",
+            method_of_application="product1_moa",
+        )
+        # if field is MtM
+        self.product.categories.add(self.cat)
+        self.product.images.add(self.img)
+
+        self.product1 = Product.objects.create(
+            name="product1",
+            description="product1_desc",
+            price=5000.00,
+            product_composition="product1_pr_cm",
+            packaging_standard="product1_packaging",
+            expiration_date="product1_ex",
+            method_of_application="product1_moa",
+        )
+        # if field is MtM
+        self.product.categories.add(self.cat)
+        self.product.images.add(self.img)
+
+        self.product2 = Product.objects.create(
+            name="product2",
+            description="product1_desc",
+            price=5000.00,
+            product_composition="product1_pr_cm",
+            packaging_standard="product1_packaging",
+            expiration_date="product1_ex",
+            method_of_application="product1_moa",
+        )
+        # if field is MtM
+        self.product.categories.add(self.cat)
+        self.product.images.add(self.img)
+
+        # Формирование корзины
+        url = reverse("products:baskets-list")
+        data = {"product": self.product1.id}
+        self.basket1 = self.client.post(url, data).data
+
+        url = reverse("products:baskets-list")
+        data = {"product": self.product.id}
+        self.basket2 = self.client.post(url, data).data
+
+    def test_basket_create(self):
+        url = reverse("products:baskets-list")
+        data = {"product": self.product2.id}
+        response = self.client.post(url, data)
+        expected_data = 1
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len([response.data]), expected_data)
+        self.assertEqual(response.data["sum"], 5000.00)
+
+    def test_basket_list(self):
+        url = reverse("products:baskets-list")
+        response = self.client.get(url)
+        expected_data = 2
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), expected_data)
+        self.assertEqual(response.data[-2]["total_sum"], 15000.00)
+
+    def test_basket_detail(self):
+        url = f"{settings.DOMAIN_NAME}/api/baskets/{self.basket1['id']}/"
+        response = self.client.get(url)
+        expected_data = 1
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len([response.data]), expected_data)
+        self.assertEqual(response.data["sum"], 5000.00)
+        self.assertEqual(response.data["total_sum"], 15000.00)
+        self.assertEqual(response.data["product"]["name"], "product1")
+
+    def test_basket_partial_update(self):
+        url = f"{settings.DOMAIN_NAME}/api/baskets/{self.basket1['id']}/"
+        data = {"quantity": 2}
+        response = self.client.patch(url, data)
+        expected_data = 1
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len([response.data]), expected_data)
+        self.assertEqual(response.data["sum"], 10000.00)
+        self.assertEqual(response.data["total_sum"], 20000.00)
+
+    def test_basket_partial_destroy(self):
+        url = f"{settings.DOMAIN_NAME}/api/baskets/{self.basket1['id']}/"
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Basket.objects.count(), 1)

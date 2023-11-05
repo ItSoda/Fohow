@@ -11,7 +11,7 @@ app_name = "products"
 router = routers.DefaultRouter()
 router.register(r"products", ProductModelViewSet, basename="products")
 router.register(r"categories", CategoryModelViewSet, basename="categories")
-router.register(r"baskets", BasketModelViewSet)
+router.register(r"baskets", BasketModelViewSet, basename="baskets")
 
 
 urlpatterns = [

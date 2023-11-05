@@ -11,7 +11,7 @@ from Fohow.permissions import IsAdminOrReadOnly
 
 from .models import Basket, Category, Product
 from .serializers import (BasketSerializer, CategorySerializer,
-                          ProductSerializer, ProductCreateSerializer)
+                          ProductCreateSerializer, ProductSerializer)
 
 
 class ProductModelViewSet(ModelViewSet):
@@ -26,7 +26,8 @@ class ProductModelViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         self.get_serializer = ProductCreateSerializer
         return super().create(request, *args, **kwargs)
-    
+
+
 class FiltersProductListView(ListAPIView):
     serializer_class = ProductSerializer
 

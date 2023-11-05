@@ -6,9 +6,9 @@ from .models import Order
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(source="get_status_display", read_only=True)
+    status = serializers.CharField(source="get_status_display", required=False)
     initiator = serializers.SlugRelatedField(
-        queryset=User.objects.all(), slug_field="id"
+        queryset=User.objects.all(), slug_field="email"
     )
 
     class Meta:
