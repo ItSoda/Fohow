@@ -3,13 +3,18 @@ from django.db import models
 from products.models import Basket
 from users.models import User
 
+from .services import (update_after_canceled_payments,
+                       update_after_success_payments)
+
 
 class Order(models.Model):
+    NOT_PAID = -1
     CREATED = 0
     PAID = 1
     ON_WAY = 2
     DELIVERED = 3
     STATUSES = (
+        (NOT_PAID, "Не оплачен"),
         (CREATED, "Создан"),
         (PAID, "Оплачен"),
         (ON_WAY, "В пути"),
@@ -33,24 +38,7 @@ class Order(models.Model):
         return f"Order #{self.id} | {self.first_name} {self.last_name}"
 
     def update_after_success_payments(self):
-        baskets = Basket.objects.filter(user=self.initiator)
-        self.status = self.PAID
-        purchased_item = []
-        total_price = 0.0
-
-        for basket in baskets:
-            purchased_item.append(basket.de_json())
-            total_price += basket.sum()
-
-        self.basket_history = {
-            "purchased_item": purchased_item,
-            "total_price": total_price,
-        }
-        baskets.delete()
-        self.save()
+        update_after_success_payments(self)
 
     def update_after_canceled_payments(self):
-        baskets = Basket.objects.filter(user=self.initiator)
-        baskets.delete()
-        self.delete()
-        self.save()
+        update_after_canceled_payments(self)

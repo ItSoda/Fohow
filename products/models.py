@@ -2,6 +2,8 @@ from django.db import models
 
 from users.models import User
 
+from .services import create_or_update, de_json, product_sum
+
 
 class Category(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -49,7 +51,7 @@ class Product(models.Model):
 # modelsQuerySet and modelsManager
 class BasketQuerySet(models.QuerySet):
     def total_sum(self):
-        return sum([basket.sum() for basket in self])
+        return sum([basket.product_sum() for basket in self])
 
     def total_quantity(self):
         return sum([basket.quantity() for basket in self])
@@ -82,30 +84,12 @@ class Basket(models.Model):
     def __str__(self):
         return f"Корзина для {self.user} | Продукт {self.product}"
 
-    def sum(self):
-        return int(self.product.price * self.quantity)
+    def product_sum(self):
+        return product_sum(self.product.price, self.quantity)
 
     def de_json(self):
-        basket_item = {
-            "name": self.product.name,
-            "quantity": self.quantity,
-            "price": float(self.product.price),
-            "sum": float(self.sum()),
-        }
-        return basket_item
+        return de_json(self.product.name, self.quantity, self.product.price)
 
     @classmethod
     def create_or_update(cls, product_id, user):
-        product = Product.objects.get(id=product_id)
-        baskets = Basket.objects.filter(user=user, product=product)
-
-        if not baskets.exists():
-            obj = Basket.objects.create(user=user, product=product, quantity=1)
-            is_created = True
-            return obj, is_created
-        else:
-            basket = baskets.first()
-            basket.quantity += 1
-            basket.save()
-            is_created = False
-            return basket, is_created
+        return create_or_update(product_id, user)

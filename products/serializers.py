@@ -77,7 +77,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class BasketSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
     # Методы корзины
-    sum = fields.FloatField(
+    product_sum = fields.FloatField(
         required=False
     )  # required  отвечает за то что это поле обязательное
     total_sum = fields.SerializerMethodField()
@@ -88,7 +88,7 @@ class BasketSerializer(serializers.ModelSerializer):
             "id",
             "product",
             "quantity",
-            "sum",
+            "product_sum",
             "total_sum",
             "created_timestamp",
         )
