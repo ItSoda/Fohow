@@ -45,7 +45,7 @@ class Product(models.Model):
         verbose_name_plural = "Продукты"
 
     def __str__(self):
-        return f"Продукт: {self.name} | Категория: {self.categories.all()[0]} | Цена: {self.price}"
+        return f"Продукт: {self.name} | Категория: {self.categories.all().first()} | Цена: {self.price}"
 
 
 # modelsQuerySet and modelsManager
