@@ -219,7 +219,7 @@ class BasketTests(APITestCase):
         expected_data = 1
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(len([response.data]), expected_data)
-        self.assertEqual(response.data["sum"], 5000.00)
+        self.assertEqual(response.data["product_sum"], 5000.00)
 
     def test_basket_list(self):
         url = reverse("products:baskets-list")
@@ -236,7 +236,7 @@ class BasketTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len([response.data]), expected_data)
-        self.assertEqual(response.data["sum"], 5000.00)
+        self.assertEqual(response.data["product_sum"], 5000.00)
         self.assertEqual(response.data["total_sum"], 15000.00)
         self.assertEqual(response.data["product"]["name"], "product1")
 
@@ -248,7 +248,7 @@ class BasketTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len([response.data]), expected_data)
-        self.assertEqual(response.data["sum"], 10000.00)
+        self.assertEqual(response.data["product_sum"], 10000.00)
         self.assertEqual(response.data["total_sum"], 20000.00)
 
     def test_basket_partial_destroy(self):

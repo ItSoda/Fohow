@@ -1,5 +1,3 @@
-
-
 # MODELS METHODS
 # Basket
 def product_sum(product_price, quantity):
@@ -36,33 +34,44 @@ def create_or_update(product_id, user):
 
 # Views
 def filters_product_queryset(min_price, max_price, category_names):
-        from products.models import Product
-        from django.db.models import Q
-        if min_price == None and max_price == None:
-            return Product.objects.filter(categories__name__in=category_names)
-        return Product.objects.filter(
-            Q(categories__name__in=category_names)
-            | Q(price__gte=min_price) & Q(price__lte=max_price)
-        )
+    from django.db.models import Q
+
+    from products.models import Product
+
+    if min_price == None and max_price == None:
+        return Product.objects.filter(categories__name__in=category_names)
+    return Product.objects.filter(
+        Q(categories__name__in=category_names)
+        | Q(price__gte=min_price) & Q(price__lte=max_price)
+    )
+
 
 def product_serializer_queryset(queryset):
     from .serializers import ProductSerializer
+
     return ProductSerializer(queryset, many=True).data
+
 
 def basket_filter_for_one_user(self, queryset):
     return queryset.filter(user=self.request.user)
 
+
 def product_not_exists(product_id):
     from .models import Product
+
     products = Product.objects.filter(id=product_id)
     if not products.exists():
         return True
     return False
 
+
 def proccess_basket_create_or_update(product_id, self, request):
     from products.models import Basket
+
     return Basket.create_or_update(product_id=product_id, user=request.user)
+
 
 def product_search(query):
     from products.models import Product
+
     Product.objects.filter(name__icontains=query)

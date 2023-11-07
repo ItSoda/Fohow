@@ -8,7 +8,11 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from Fohow.permissions import IsAdminOrReadOnly
-from products.services import basket_filter_for_one_user, filters_product_queryset, proccess_basket_create_or_update, product_not_exists, product_search, product_serializer_queryset
+from products.services import (basket_filter_for_one_user,
+                               filters_product_queryset,
+                               proccess_basket_create_or_update,
+                               product_not_exists, product_search,
+                               product_serializer_queryset)
 
 from .models import Basket, Category, Product
 from .serializers import (BasketSerializer, CategorySerializer,
@@ -73,7 +77,9 @@ class BasketModelViewSet(ModelViewSet):
                     {"product": "There is no product with this ID"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            obj, is_created = proccess_basket_create_or_update(product_id, self, request)
+            obj, is_created = proccess_basket_create_or_update(
+                product_id, self, request
+            )
             serializer = self.get_serializer(obj)
             status_code = status.HTTP_201_CREATED if is_created else status.HTTP_200_OK
             return Response(serializer.data, status=status_code)

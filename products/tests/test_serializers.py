@@ -130,7 +130,7 @@ class ProductSerializerTests(APITestCase):
             "product": self.basket_sr_data["product"],
             "quantity": 1,
             "created_timestamp": self.basket_sr_data["created_timestamp"],
-            "sum": 10000.0,
+            "product_sum": 10000.0,
             "total_sum": 20000,
         }
 
