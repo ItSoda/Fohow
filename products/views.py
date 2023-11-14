@@ -26,7 +26,8 @@ class ProductModelViewSet(ModelViewSet):
 
     @method_decorator(cache_page(10))
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        # return super().list(request, *args, **kwargs)
+        return 1/0
 
     def create(self, request, *args, **kwargs):
         self.get_serializer = ProductCreateSerializer

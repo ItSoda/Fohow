@@ -5,7 +5,7 @@ from django.core.files import File
 from rest_framework import fields, serializers
 
 from .models import Basket, Category, Image, Product
-
+from .services import get_total_sum, product_instance
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -56,13 +56,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         categories_ids = validated_data.pop("categories")
         images_ids = validated_data.pop("images")
-
-        instance = Product.objects.create(**validated_data)
-
-        instance.categories.set(categories_ids)
-        instance.images.set(images_ids)
-
-        return instance
+        return product_instance(categories_ids, images_ids, **validated_data)
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -95,4 +89,4 @@ class BasketSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_timestamp",)
 
     def get_total_sum(self, obj):
-        return Basket.basketmanager.filter(user_id=obj.user.id).total_sum()
+        return get_total_sum(self, obj)

@@ -75,3 +75,16 @@ def product_search(query):
     from products.models import Product
 
     Product.objects.filter(name__icontains=query)
+
+# Serializers
+def get_total_sum(self, obj):
+    from products.models import Basket
+    return Basket.basketmanager.filter(user_id=obj.user.id).total_sum()
+
+def product_instance(categories_ids, images_ids, **kwargs):
+    from products.models import Product
+    instance = Product.objects.create(**kwargs)
+
+    instance.categories.set(categories_ids)
+    instance.images.set(images_ids)
+    return instance
