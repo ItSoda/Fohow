@@ -69,9 +69,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "drf_yasg",
+
     "products",
     "users",
-    "orders",
 ]
 
 MIDDLEWARE = [
@@ -82,8 +82,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    
-    "Fohow.middleware.FirstMiddleWare",
 ]
 
 ROOT_URLCONF = "Fohow.urls"
@@ -226,7 +224,7 @@ DJOSER = {
 
 # JWT
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=120),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1440),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -239,7 +237,7 @@ SIMPLE_JWT = {
     "JSON_ENCODER": None,
     "JWK_URL": None,
     "LEEWAY": 0,
-    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_TYPES": ("JWT",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
@@ -266,11 +264,6 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_SSL = env("EMAIL_USE_SSL")
 EMAIL_PORT = env("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
-
-# yookassa
-YOOKASSA_REDIRECT_URL = "/admin/"
-YOOKASSA_SHOP_ID = env("YOOKASSA_SHOP_ID")
-YOOKASSA_SECRET_KEY = env("YOOKASSA_SECRET_KEY")
 
 # TELEGRAM BOT
 TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN")

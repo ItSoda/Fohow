@@ -1,8 +1,7 @@
-from django.conf import settings
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import (BasketModelViewSet, CategoryModelViewSet,
+from .views import (CategoryModelViewSet,
                     FiltersProductListView, ProductModelViewSet,
                     ProductSearchView)
 
@@ -11,7 +10,6 @@ app_name = "products"
 router = routers.DefaultRouter()
 router.register(r"products", ProductModelViewSet, basename="products")
 router.register(r"categories", CategoryModelViewSet, basename="categories")
-router.register(r"baskets", BasketModelViewSet, basename="baskets")
 
 
 urlpatterns = [

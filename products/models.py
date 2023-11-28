@@ -1,9 +1,5 @@
 from django.db import models
 
-from users.models import User
-
-from .services import create_or_update, de_json, product_sum
-
 
 class Category(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -46,50 +42,3 @@ class Product(models.Model):
 
     def __str__(self):
         return f"Продукт: {self.name} | Категория: {self.categories.all().first()} | Цена: {self.price}"
-
-
-# modelsQuerySet and modelsManager
-class BasketQuerySet(models.QuerySet):
-    def total_sum(self):
-        return sum([basket.product_sum() for basket in self])
-
-    def total_quantity(self):
-        return sum([basket.quantity() for basket in self])
-
-
-class BasketManager(models.Manager):
-    def get_queryset(self):
-        return BasketQuerySet(self.model)
-
-    def total_sum(self):
-        return self.get_queryset().total_sum()
-
-    def total_quantity(self):
-        return self.get_queryset().total_quantity()
-
-
-class Basket(models.Model):
-    product = models.ForeignKey(to=Product, on_delete=models.CASCADE)
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=0)
-    created_timestamp = models.DateTimeField(auto_now_add=True)
-
-    objects = models.Manager()
-    basketmanager = BasketManager()
-
-    class Meta:
-        verbose_name = "корзину"
-        verbose_name_plural = "Корзины"
-
-    def __str__(self):
-        return f"Корзина для {self.user} | Продукт {self.product}"
-
-    def product_sum(self):
-        return product_sum(self.product.price, self.quantity)
-
-    def de_json(self):
-        return de_json(self.product.name, self.quantity, self.product.price)
-
-    @classmethod
-    def create_or_update(cls, product_id, user):
-        return create_or_update(product_id, user)

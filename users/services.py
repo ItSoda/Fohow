@@ -56,18 +56,3 @@ class EmailVerificationHandler:
             return False
         except Exception as e:
             return False
-
-
-def check_last_first_name(request):
-    if "first_name" not in request.data or "last_name" not in request.data:
-        return True
-    return False
-
-
-def user_update_first_last_name(user_id, request):
-    from users.models import User
-
-    user = get_object_or_404(User, id=user_id)
-    user.first_name = request.data["first_name"]
-    user.last_name = request.data["last_name"]
-    user.save()

@@ -2,10 +2,11 @@ from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
 from django.core.files import File
-from rest_framework import fields, serializers
+from rest_framework import serializers
 
-from .models import Basket, Category, Image, Product
-from .services import get_total_sum, product_instance
+from .models import Category, Image, Product
+from .services import product_instance
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -66,27 +67,3 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
-
-
-class BasketSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
-    # Методы корзины
-    product_sum = fields.FloatField(
-        required=False
-    )  # required  отвечает за то что это поле обязательное
-    total_sum = fields.SerializerMethodField()
-
-    class Meta:
-        model = Basket
-        fields = (
-            "id",
-            "product",
-            "quantity",
-            "product_sum",
-            "total_sum",
-            "created_timestamp",
-        )
-        read_only_fields = ("created_timestamp",)
-
-    def get_total_sum(self, obj):
-        return get_total_sum(self, obj)

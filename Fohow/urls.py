@@ -12,7 +12,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("products.urls")),
     path("api/", include("users.urls")),
-    path("api/", include("orders.urls")),
     # Регистрация, аутентификация и авторизация
     path("auth/", include("djoser.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Basket, Category, Image, Product
+from .models import Category, Image, Product
 
 
 @admin.register(Product)
@@ -35,9 +35,3 @@ class CategoryAdmin(admin.ModelAdmin):
 class ImageAdmin(admin.ModelAdmin):
     list_display = ("img",)
     fields = ("img",)
-
-
-class BasketAdmin(admin.TabularInline):
-    model = Basket
-    fields = ("product", "quantity")
-    extra = 0
