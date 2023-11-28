@@ -4,13 +4,14 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from Fohow.permissions import IsAdminOrReadOnly
 from products.services import (filters_product_queryset, product_search,
                                 product_serializer_queryset)
 
-from .models import Category, Product
-from .serializers import (CategorySerializer, ProductCreateSerializer, ProductSerializer)
+from .models import Category, Product, Reviews
+from .serializers import CategorySerializer, ProductCreateSerializer, ProductSerializer, ReviewCreateSerializer, ReviewSerializer
 
 
 class ProductModelViewSet(ModelViewSet):
@@ -20,27 +21,32 @@ class ProductModelViewSet(ModelViewSet):
 
     @method_decorator(cache_page(10))
     def list(self, request, *args, **kwargs):
-        # return super().list(request, *args, **kwargs)
-        return 1/0
+        return super().list(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         self.get_serializer = ProductCreateSerializer
         return super().create(request, *args, **kwargs)
 
 
-class FiltersProductListView(ListAPIView):
-    serializer_class = ProductSerializer
+class ReviewsModelViewSet(ModelViewSet):
+    queryset = Reviews.objects.all()
+    serializer_class = ReviewSerializer
 
-    def get_queryset(self):
-        # Берем параметры из url
-        min_price = self.request.GET.get("min_price")
-        max_price = self.request.GET.get("max_price")
-        categories_names = self.request.GET.getlist("categories")
-        return filters_product_queryset(min_price, max_price, categories_names)
+    def get_permissions(self):
+        if self.action in ["destroy", "update", "partial_update"]:
+            permission_classes = [IsAdminUser]
+        elif self.action in ["list", "create"]:
+            permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        serialized_data = product_serializer_queryset(self.get_queryset())
-        return Response({"products": serialized_data}, status=status.HTTP_200_OK)
+        return [permission() for permission in permission_classes]
+    
+    @method_decorator(cache_page(10))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+    def create(self, request, *args, **kwargs):
+        self.get_serializer = ReviewCreateSerializer
+        return super().create(request, *args, **kwargs)
 
 
 class CategoryModelViewSet(ModelViewSet):
@@ -63,3 +69,18 @@ class ProductSearchView(ListAPIView):
         # Используйте фильтр для поиска товаров по имени (или другим полям) по запросу
         queryset = product_search(query)
         return queryset
+
+
+class FiltersProductListView(ListAPIView):
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        # Берем параметры из url
+        min_price = self.request.GET.get("min_price")
+        max_price = self.request.GET.get("max_price")
+        categories_names = self.request.GET.getlist("categories")
+        return filters_product_queryset(min_price, max_price, categories_names)
+
+    def get(self, request, *args, **kwargs):
+        serialized_data = product_serializer_queryset(self.get_queryset())
+        return Response({"products": serialized_data}, status=status.HTTP_200_OK)

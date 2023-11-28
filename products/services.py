@@ -1,7 +1,6 @@
 # Views
 def filters_product_queryset(min_price, max_price, category_names):
     from django.db.models import Q
-
     from products.models import Product
 
     if min_price == None and max_price == None:
@@ -53,4 +52,10 @@ def product_instance(categories_ids, images_ids, **kwargs):
 
     instance.categories.set(categories_ids)
     instance.images.set(images_ids)
+    return instance
+
+def review_instance(user_id, product_id, **kwargs):
+    from products.models import Reviews
+    instance = Reviews.objects.create(user_id=user_id, product_id=product_id, **kwargs)
+
     return instance

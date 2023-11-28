@@ -3,9 +3,12 @@ from urllib.request import urlopen
 
 from django.core.files import File
 from rest_framework import serializers
+from users.models import User
 
-from .models import Category, Image, Product
-from .services import product_instance
+from users.serializers import UserSerializer
+
+from .models import Category, Image, Product, Reviews
+from .services import product_instance, review_instance
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -40,6 +43,7 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Image
         fields = (
             "id",
+            "name",
             "img",
         )
 
@@ -66,4 +70,27 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
+        fields = "__all__"
+
+
+class ReviewCreateSerializer(serializers.ModelSerializer):
+    user = serializers.IntegerField(write_only=True)
+    product = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = Reviews
+        fields = "__all__"
+
+    def create(self, validated_data):
+        user_id = validated_data.pop("user")
+        product_id = validated_data.pop("product")
+        return review_instance(user_id=user_id, product_id=product_id, **validated_data)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    product = ProductSerializer()
+
+    class Meta:
+        model = Reviews
         fields = "__all__"

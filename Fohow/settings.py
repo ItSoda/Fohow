@@ -112,7 +112,7 @@ if DEBUG:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",  # mysql / postgresql
-            "NAME": "Fohow",
+            "NAME": "fohow-dev",
             "USER": "root",
             "PASSWORD": "nik140406",
             "HOST": "localhost",

@@ -1,7 +1,9 @@
 from django.db import models
-
+from users.models import User
 
 class Category(models.Model):
+    """Model for categories"""
+
     name = models.CharField(max_length=30, unique=True)
 
     class Meta:
@@ -14,6 +16,9 @@ class Category(models.Model):
 
 
 class Image(models.Model):
+    """Model for images"""
+
+    name = models.CharField(max_length=100)
     img = models.ImageField(upload_to="products_images")
 
     class Meta:
@@ -25,6 +30,8 @@ class Image(models.Model):
 
 
 class Product(models.Model):
+    """Model for products"""
+
     name = models.CharField(max_length=120, db_index=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -42,3 +49,19 @@ class Product(models.Model):
 
     def __str__(self):
         return f"Продукт: {self.name} | Категория: {self.categories.all().first()} | Цена: {self.price}"
+    
+
+class Reviews(models.Model):
+    """Model for reviews"""
+
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    product = models.ForeignKey(to=Product, on_delete=models.CASCADE)
+    context = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "отзыву"
+        verbose_name_plural = "Отзывы"
+
+    def __str__(self):
+        return f"Отзыв: {self.user.name} | продукт: {self.product.name}"
