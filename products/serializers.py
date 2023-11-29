@@ -2,11 +2,10 @@ from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
 from django.core.files import File
-from rest_framework import serializers
-from users.models import User
+from rest_framework import serializers, fields
+
 
 from users.serializers import UserSerializer
-
 from .models import Category, Image, Product, Reviews
 from .services import product_instance, review_instance
 
@@ -64,15 +63,6 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         return product_instance(categories_ids, images_ids, **validated_data)
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    categories = CategorySerializer(many=True)
-    images = ImageSerializer(many=True)
-
-    class Meta:
-        model = Product
-        fields = "__all__"
-
-
 class ReviewCreateSerializer(serializers.ModelSerializer):
     user = serializers.IntegerField(write_only=True)
     product = serializers.IntegerField(write_only=True)
@@ -89,8 +79,31 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    product = ProductSerializer()
 
     class Meta:
         model = Reviews
+        fields = ("id", "user", "text", "rating", "created")
+        read_only_fileds = ("created")
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    categories = CategorySerializer(many=True)
+    images = ImageSerializer(many=True)
+    
+    class Meta:
+        model = Product
         fields = "__all__"
+
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    categories = CategorySerializer(many=True)
+    images = ImageSerializer(many=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
+    total_rating = fields.SerializerMethodField()
+    
+    class Meta:
+        model = Product
+        fields = "__all__"
+
+    def get_total_rating(self, obj):
+        return Reviews.ReviewManager.filter(product_id=obj.id).total_rating()

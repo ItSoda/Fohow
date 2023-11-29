@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-fohow
+    restart: always
+    environment:
+      - MYSQL_DATABASE=fohow-dev
+      - MYSQL_ROOT_USER=root
+      - MYSQL_ROOT_PASSWORD=nik140406
+    volumes:
+      - mysql_fohow_data:/var/lib/mysql/
+
+  redis: 
+    image: redis:latest
+    container_name: redis-fohow
+    restart: always
+    ports:
+      - "6379:6379"
+
+  fohow-api:
+    build: .
+    image: fohow-api
+    command:
+      - sh
+      - -c
+      - |
+        dockerize -wait tcp://mysql:3306 -timeout 60s &&
+        poetry run python manage.py collectstatic --noinput &&
+        poetry run python manage.py migrate &&
+        ngrok authtoken 2YAjzb799W5sMx82p3azikH2sP2_3KNzf4kzjVayk11njbvC8 &&
+        ngrok http -hostname=boar-still-alpaca.ngrok-free.app 8000 &
+        poetry run gunicorn Fohow.wsgi:application -b :8000
+    environment:
+      - DJANGO_RUNNING_IN_DOCKER=True
+    ports:
+      - "8000:8000" 
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - .:/fohow
+      - static_volume:/fohow/static
+      - media_volume:/fohow/media
+    container_name: fohow-api
+  nginx:
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./docker/nginx/
+    container_name: nginx-fohow
+    image: nginx-fohow
+    volumes:
+      - static_volume:/fohow/static
+      - media_volume:/fohow/media
+    depends_on:
+      - fohow-api
+    ports:
+      - "80:80"
+
+volumes:
+  mysql_fohow_data: null
+  static_volume:
+  media_volume:

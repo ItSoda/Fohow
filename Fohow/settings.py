@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from datetime import timedelta
+import os
 from pathlib import Path
 
 import environ
@@ -69,6 +70,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "drf_yasg",
+    "corsheaders",
 
     "products",
     "users",
@@ -108,7 +110,19 @@ WSGI_APPLICATION = "Fohow.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if DEBUG:
+
+if os.environ.get('DJANGO_RUNNING_IN_DOCKER'):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",  # mysql / postgresql
+            "NAME": "fohow-dev",
+            "USER": "root",
+            "PASSWORD": "nik140406",
+            "HOST": "mysql",
+            "PORT": 3306,  # 5432 for postgresql
+        }
+    }
+elif DEBUG:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",  # mysql / postgresql
@@ -119,7 +133,6 @@ if DEBUG:
             "PORT": 3306,  # 5432 for postgresql
         }
     }
-
 else:
     DATABASES = {
         "default": {
@@ -167,17 +180,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "/static/"
-if DEBUG:
-    STATICFILES_DIRS = [BASE_DIR / "static"]
-else:
+if not DEBUG:
     STATIC_ROOT = BASE_DIR / "static"
+elif os.environ.get("DJANGO_RUNNING_IN_DOCKER"):
+    STATIC_ROOT = "static"
+else:
+    STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
 # Base url to serve media files
 MEDIA_URL = "/media/"
 
-# Path where media is stored
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -188,15 +202,27 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 # Redis
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/0",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
+if os.environ.get("DJANGO_RUNNING_IN_DOCKER"):
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://redis:6379/0",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+        }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/0",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+        }
+    }
+
 
 # DRF
 REST_FRAMEWORK = {
@@ -268,3 +294,33 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 # TELEGRAM BOT
 TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN")
 ADMIN_ID = env("ADMIN_ID")
+
+# CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:50000",
+    "http://localhost:3000",
+]
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+CORS_URLS_REGEX = r"^/.*$"

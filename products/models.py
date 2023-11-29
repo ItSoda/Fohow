@@ -51,17 +51,38 @@ class Product(models.Model):
         return f"Продукт: {self.name} | Категория: {self.categories.all().first()} | Цена: {self.price}"
     
 
+# modelsQuerySet and modelsManager
+class ReviewQuerySet(models.QuerySet):
+    def total_rating(self):
+        if self.count() > 0:
+            return round(sum([review.rating for review in self])/self.count(), 2)
+        else:
+            return 0.0
+
+
+class ReviewManager(models.Manager):
+    def get_queryset(self):
+        return ReviewQuerySet(self.model)
+    
+    def total_rating(self):
+        return self.get_queryset().total_rating()
+
+
 class Reviews(models.Model):
     """Model for reviews"""
 
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    product = models.ForeignKey(to=Product, on_delete=models.CASCADE)
-    context = models.TextField()
+    product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name="reviews")
+    text = models.TextField()
+    rating = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+    ReviewManager = ReviewManager()
 
     class Meta:
         verbose_name = "отзыву"
         verbose_name_plural = "Отзывы"
 
     def __str__(self):
-        return f"Отзыв: {self.user.name} | продукт: {self.product.name}"
+        return f"Отзыв: {self.user.email} | продукт: {self.product.name}"

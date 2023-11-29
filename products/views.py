@@ -6,12 +6,12 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
-from Fohow.permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly
 from products.services import (filters_product_queryset, product_search,
                                 product_serializer_queryset)
 
 from .models import Category, Product, Reviews
-from .serializers import CategorySerializer, ProductCreateSerializer, ProductSerializer, ReviewCreateSerializer, ReviewSerializer
+from .serializers import CategorySerializer, ProductCreateSerializer, ProductDetailSerializer, ProductSerializer, ReviewCreateSerializer, ReviewSerializer
 
 
 class ProductModelViewSet(ModelViewSet):
@@ -26,6 +26,10 @@ class ProductModelViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         self.get_serializer = ProductCreateSerializer
         return super().create(request, *args, **kwargs)
+    
+    def retrieve(self, request, *args, **kwargs):
+        self.get_serializer = ProductDetailSerializer
+        return super().retrieve(request, *args, **kwargs)
 
 
 class ReviewsModelViewSet(ModelViewSet):
