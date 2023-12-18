@@ -26,7 +26,7 @@ services:
       - sh
       - -c
       - |
-        dockerize -wait tcp://mysql:3306 -timeout 60s &&
+        dockerize -wait tcp://mysql:3306 -timeout 160s &&
         poetry run python manage.py collectstatic --noinput &&
         poetry run python manage.py migrate &&
         ngrok authtoken 2YAjzb799W5sMx82p3azikH2sP2_3KNzf4kzjVayk11njbvC8 &&

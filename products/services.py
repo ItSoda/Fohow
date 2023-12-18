@@ -17,10 +17,6 @@ def product_serializer_queryset(queryset):
     return ProductSerializer(queryset, many=True).data
 
 
-def basket_filter_for_one_user(self, queryset):
-    return queryset.filter(user=self.request.user)
-
-
 def product_not_exists(product_id):
     from .models import Product
 
@@ -29,11 +25,6 @@ def product_not_exists(product_id):
         return True
     return False
 
-
-def proccess_basket_create_or_update(product_id, self, request):
-    from products.models import Basket
-
-    return Basket.create_or_update(product_id=product_id, user=request.user)
 
 
 def product_search(query):
@@ -52,10 +43,4 @@ def product_instance(categories_ids, images_ids, **kwargs):
 
     instance.categories.set(categories_ids)
     instance.images.set(images_ids)
-    return instance
-
-def review_instance(user_id, product_id, **kwargs):
-    from products.models import Reviews
-    instance = Reviews.objects.create(user_id=user_id, product_id=product_id, **kwargs)
-
     return instance

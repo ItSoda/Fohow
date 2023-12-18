@@ -4,22 +4,21 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from .permissions import IsAdminOrReadOnly
 from products.services import (filters_product_queryset, product_search,
                                 product_serializer_queryset)
 
-from .models import Category, Product, Reviews
-from .serializers import CategorySerializer, ProductCreateSerializer, ProductDetailSerializer, ProductSerializer, ReviewCreateSerializer, ReviewSerializer
+from .models import Category, Product
+from .serializers import CategorySerializer, ProductCreateSerializer, ProductDetailSerializer, ProductShortSerializer
 
 
 class ProductModelViewSet(ModelViewSet):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = ProductShortSerializer
     permission_classes = (IsAdminOrReadOnly,)
 
-    @method_decorator(cache_page(10))
+    @method_decorator(cache_page(60))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -30,41 +29,20 @@ class ProductModelViewSet(ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         self.get_serializer = ProductDetailSerializer
         return super().retrieve(request, *args, **kwargs)
-
-
-class ReviewsModelViewSet(ModelViewSet):
-    queryset = Reviews.objects.all()
-    serializer_class = ReviewSerializer
-
-    def get_permissions(self):
-        if self.action in ["destroy", "update", "partial_update"]:
-            permission_classes = [IsAdminUser]
-        elif self.action in ["list", "create"]:
-            permission_classes = [IsAuthenticated]
-
-        return [permission() for permission in permission_classes]
     
-    @method_decorator(cache_page(10))
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-    
-    def create(self, request, *args, **kwargs):
-        self.get_serializer = ReviewCreateSerializer
-        return super().create(request, *args, **kwargs)
-
 
 class CategoryModelViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
 
-    @method_decorator(cache_page(10))
+    @method_decorator(cache_page(60))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
 
 class ProductSearchView(ListAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductShortSerializer
 
     def get_queryset(self):
         query = self.request.query_params.get(
@@ -76,7 +54,7 @@ class ProductSearchView(ListAPIView):
 
 
 class FiltersProductListView(ListAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductShortSerializer
 
     def get_queryset(self):
         # Берем параметры из url

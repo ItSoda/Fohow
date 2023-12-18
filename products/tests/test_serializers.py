@@ -124,14 +124,4 @@ class ProductSerializerTests(APITestCase):
 
         self.assertEqual(self.images_sr_data, expected_data)
 
-    def test_basket_serializer(self):
-        expected_data = {
-            "id": self.basket1.id,
-            "product": self.basket_sr_data["product"],
-            "quantity": 1,
-            "created_timestamp": self.basket_sr_data["created_timestamp"],
-            "product_sum": 10000.0,
-            "total_sum": 20000,
-        }
-
         self.assertEqual(expected_data, self.basket_sr_data)
