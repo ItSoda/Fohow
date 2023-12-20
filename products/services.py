@@ -12,9 +12,9 @@ def filters_product_queryset(min_price, max_price, category_names):
 
 
 def product_serializer_queryset(queryset):
-    from .serializers import ProductSerializer
+    from .serializers import ProductShortSerializer
 
-    return ProductSerializer(queryset, many=True).data
+    return ProductShortSerializer(queryset, many=True).data
 
 
 def product_not_exists(product_id):
