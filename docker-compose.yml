@@ -7,7 +7,7 @@ services:
     restart: always
     environment:
       - MYSQL_DATABASE=fohow-prod
-      - MYSQL_ROOT_PASSWORD=nik140406
+      - MYSQL_ROOT_PASSWORD=pass_prod
     volumes:
       - mysql_fohow_data:/var/lib/mysql/
 
