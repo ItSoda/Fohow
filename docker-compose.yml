@@ -6,8 +6,7 @@ services:
     container_name: mysql-fohow
     restart: always
     environment:
-      - MYSQL_DATABASE=fohow-dev
-      - MYSQL_ROOT_USER=root
+      - MYSQL_DATABASE=fohow-prod
       - MYSQL_ROOT_PASSWORD=nik140406
     volumes:
       - mysql_fohow_data:/var/lib/mysql/
@@ -32,8 +31,12 @@ services:
         ngrok authtoken 2YAjzb799W5sMx82p3azikH2sP2_3KNzf4kzjVayk11njbvC8 &&
         ngrok http -hostname=boar-still-alpaca.ngrok-free.app 8000 &
         poetry run gunicorn Fohow.wsgi:application -b :8000
+    env_file:
+      - docker-compose.env
     environment:
-      - DJANGO_RUNNING_IN_DOCKER=True
+      - DOCKER_CONTAINER=True
+      - VIRTUAL_HOST=fohowomsk.ru
+      - LETSENCRYPT_HOST=fohowomsk.ru
     ports:
       - "8000:8000" 
     depends_on:
@@ -48,17 +51,35 @@ services:
     build: 
       dockerfile: ./Dockerfile
       context: ./docker/nginx/
-    container_name: nginx-fohow
-    image: nginx-fohow
+    container_name: nginx_fohow
+    image: nginx_fohow
     volumes:
       - static_volume:/fohow/static
       - media_volume:/fohow/media
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
     depends_on:
-      - fohow-api
+      - api
     ports:
       - "80:80"
+      - "443:443"
+  acme_companion:
+    image: nginxproxy/acme-companion:2.2
+    container_name: fohow_acme_companion
+    volumes_from:
+      - nginx
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+
 
 volumes:
   mysql_fohow_data: null
   static_volume:
   media_volume:
+  certs:
+  vhost:
+  html:
+  acme:
