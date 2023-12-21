@@ -61,7 +61,7 @@ services:
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
     depends_on:
-      - api
+      - fohow-api
     ports:
       - "80:80"
       - "443:443"
