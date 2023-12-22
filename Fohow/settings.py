@@ -226,7 +226,7 @@ DEFAULT_FROM_EMAIL = config.get("DEFAULT_FROM_EMAIL")
 
 
 # CSRF
-CSRF_TRUSTED_ORIGINS = ["https://boar-still-alpaca.ngrok-free.app", "http://fohowomsk.site", "https://fohowomsk.site"]
+CSRF_TRUSTED_ORIGINS = ["https://boar-still-alpaca.ngrok-free.app", "http://fohowomsk.ru", "https://fohowomsk.ru"]
 
 
 # CORS
