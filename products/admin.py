@@ -5,16 +5,10 @@ from .models import Category, Image, Product
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "price")
+    list_display = ("name",)
     fields = (
         "name",
         "description",
-        "price",
-        "product_composition",
-        "packaging_standard",
-        "expiration_date",
-        "method_of_application",
-        "quantity",
         "categories",
         "images",
     )
