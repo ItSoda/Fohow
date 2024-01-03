@@ -1,6 +1,6 @@
 # Django Dockerized E-commerce Project - Fohow
 ## Created by OnlyDev
-This project was created by the talented Pogos team, bringing together expertise in Django, Docker, and other cutting-edge technologies.
+This project was created by the talented OnlyDev team, bringing together expertise in Django, Docker, and other cutting-edge technologies.
 ## Overview
 This Django-based project is a versatile e-commerce platform designed for Fohow, an online store. Utilizing Docker for containerization, it provides a scalable and portable solution for deploying the Fohow online store.
 ## Features
