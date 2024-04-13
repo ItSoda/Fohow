@@ -25,7 +25,6 @@ services:
       - sh
       - -c
       - |
-        dockerize -wait tcp://mysql:3306 -timeout 160s &&
         poetry run python manage.py collectstatic --noinput &&
         poetry run python manage.py migrate &&
         poetry run gunicorn Fohow.wsgi:application -b :8000
