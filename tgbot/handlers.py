@@ -36,7 +36,7 @@ def handle_start(message):
         if UserBot.objects.get(user_id=user_id):
             bot.send_message(
                 message.chat.id,
-                f"Привет, {first_name}! \nЭто фитнес-клуб Solevar! Что вас интересует?",
+                f"Привет, {first_name}! \nЭто Fohow! Что вас интересует?",
                 reply_markup=markup,
             )
 
@@ -49,7 +49,7 @@ def handle_start(message):
         )
         bot.send_message(
             message.chat.id,
-            f"Привет, {first_name}! \nЭто фитнес-клуб Solevar! Что вас интересует?",
+            f"Привет, {first_name}! \nЭто Fohow! Что вас интересует?",
             reply_markup=markup,
         )
 
@@ -109,17 +109,14 @@ def apps(message):
 # Рассылка всем пользователям от лица админа
 @bot.message_handler(commands=["send_message"])
 def send_message(message):
-    user = Admin.objects.filter(UUID=int(message.chat.id)).first()
-    if user:
-        markup = types.ForceReply(selective=False)
-        bot.send_message(
-            message.chat.id,
-            "Введите заголовок сообщения, которое хотите отправить:",
-            reply_markup=markup,
-        )
-        bot.register_next_step_handler(message, process_title)
-    else:
-        bot.send_message(message.chat.id, "Вы не администратор")
+    markup = types.ForceReply(selective=False)
+    bot.send_message(
+        message.chat.id,
+        "Введите заголовок сообщения, которое хотите отправить:",
+        reply_markup=markup,
+    )
+    bot.register_next_step_handler(message, process_title)
+
 
 
 def process_title(message):
