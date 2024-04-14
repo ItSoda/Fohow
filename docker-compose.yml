@@ -16,7 +16,7 @@ services:
     command: sh -c "poetry run python manage.py startbot"
     restart: always
     depends_on:    
-      - api
+      - fohow-api
     volumes:
       - .:/fohow
     env_file:
