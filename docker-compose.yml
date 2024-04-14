@@ -24,7 +24,7 @@ services:
 
 
   startbot:
-    image: blackkk-api:latest
+    image: fohow-api:latest
     command: sh -c "poetry run python manage.py startbot"
     restart: always
     depends_on:    
@@ -63,6 +63,7 @@ services:
       - static_volume:/fohow/static
       - media_volume:/fohow/media
     container_name: fohow-api
+
   nginx:
     build: 
       dockerfile: ./Dockerfile
