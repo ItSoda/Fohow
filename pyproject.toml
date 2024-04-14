@@ -6,7 +6,7 @@ authors = ["It Soda <nikshchegilskiy@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9.9"
 django = "4.2"
 djangorestframework = "^3.14.0"
 drf-yasg = "^1.21.7"
