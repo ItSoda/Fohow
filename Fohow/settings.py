@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "drf_yasg",
     "corsheaders",
-
+    "tgbot",
     "products",
     "users",
 ]
@@ -81,15 +81,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "Fohow.wsgi.application"
 
-# PARAMETRS FOR DATABASE
+POSTGRESQL_DATABASE = config.get("POSTGRESQL_DATABASE")
+POSTGRESQL_ROOT_USER = config.get("POSTGRESQL_ROOT_USER")
+POSTGRESQL_ROOT_PASSWORD = config.get("POSTGRESQL_ROOT_PASSWORD")
+POSTGRESQL_HOST = config.get("POSTGRESQL_HOST")
+POSTGRESQL_PORT = config.get("POSTGRESQL_PORT")
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": config.get("MYSQL_DATABASE", default="fohow-dev"),
-        "USER": config.get("MYSQL_ROOT_USER", default="root"),
-        "PASSWORD": config.get("MYSQL_ROOT_PASSWORD", default="nik140406"),
-        "HOST": config.get("MYSQL_HOST", default="localhost"),
-        "PORT": config.get("MYSQL_PORT", default="3306"),
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": POSTGRESQL_DATABASE,
+        "USER": POSTGRESQL_ROOT_USER,
+        "PASSWORD": POSTGRESQL_ROOT_PASSWORD,
+        "HOST": POSTGRESQL_HOST,
+        "PORT": POSTGRESQL_PORT,
     }
 }
 

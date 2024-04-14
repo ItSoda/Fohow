@@ -1,15 +1,19 @@
 version: '2'
 
 services:
-  mysql:
-    image: mysql:latest
-    container_name: mysql-fohow
+  postgresql:
+    image: postgres
     restart: always
+    container_name: ${POSTGRESQL_HOST}
+    env_file:
+      - ${ENV_FILE}
     environment:
-      - MYSQL_DATABASE=fohow-prod
-      - MYSQL_ROOT_PASSWORD=pass_prod
+      POSTGRES_DB: ${POSTGRESQL_DATABASE}
+      POSTGRES_USER: ${POSTGRESQL_ROOT_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_ROOT_PASSWORD}
+      POSTGRES_MAX_CONNECTIONS: 1
     volumes:
-      - mysql_fohow_data:/var/lib/mysql/
+      - db-data:/var/lib/postgresql/data
 
   redis: 
     image: redis:latest
@@ -17,6 +21,21 @@ services:
     restart: always
     ports:
       - "6379:6379"
+
+
+  startbot:
+    image: blackkk-api:latest
+    command: sh -c "poetry run python manage.py startbot"
+    restart: always
+    depends_on:    
+      - fohow-api
+    volumes:
+      - ./itsoda
+    env_file:
+      - docker-compose.env
+    environment:
+      - DOCKER_CONTAINER=True
+    container_name: blakkk_startbot
 
   fohow-api:
     build: .
@@ -73,7 +92,7 @@ services:
 
 
 volumes:
-  mysql_fohow_data: null
+  db-data: null
   static_volume:
   media_volume:
   certs:
