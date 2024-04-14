@@ -30,7 +30,7 @@ services:
     depends_on:    
       - fohow-api
     volumes:
-      - ./itsoda
+      - ./fohow
     env_file:
       - docker-compose.env
     environment:
