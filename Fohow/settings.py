@@ -226,7 +226,7 @@ DEFAULT_FROM_EMAIL = config.get("DEFAULT_FROM_EMAIL")
 
 
 # CSRF
-CSRF_TRUSTED_ORIGINS = ["https://boar-still-alpaca.ngrok-free.app", "https://fohowomsk.site", "https://fohowomsk.ru"]
+CSRF_TRUSTED_ORIGINS = ["https://boar-still-alpaca.ngrok-free.app", "https://fohowomsk.site", "https://fohowomsk.ru", "https://fohowomsk.space"]
 
 
 # CORS
@@ -234,6 +234,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:50000",
     "http://localhost:3000",
     "http://fohowomsk.site",
+    "http://fohowomsk.space"
 ]
 
 CORS_ALLOW_METHODS = [
