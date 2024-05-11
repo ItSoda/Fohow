@@ -46,8 +46,8 @@ services:
       - docker-compose.env
     environment:
       - DOCKER_CONTAINER=True
-      - VIRTUAL_HOST=fohowomsk.site
-      - LETSENCRYPT_HOST=fohowomsk.site
+      - VIRTUAL_HOST=fohowomsk.space
+      - LETSENCRYPT_HOST=fohowomsk.space
     ports:
       - "8000:8000" 
     depends_on:
